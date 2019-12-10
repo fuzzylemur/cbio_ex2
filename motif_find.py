@@ -56,7 +56,7 @@ def main():
 
     if args.alg == 'viterbi':
 
-        # calcxulate viterbi matrix
+        # calculate viterbi matrix
         viterbi_matrix = np.zeros((num_states, seq_len, 2))
         viterbi_matrix[0,0,0] = 1
         for i in range(1, seq_len):
@@ -78,7 +78,17 @@ def main():
         print("result: ",result)
 
     elif args.alg == 'forward':
-        raise NotImplementedError
+
+        # calculate forward matrix
+        forward_matrix = np.zeros((num_states, seq_len))
+        forward_matrix[0,0] = 1
+        for i in range(1, seq_len):
+            for j in range(num_states):
+                vec = forward_matrix[:,i-1] * transition_matrix[:,j]
+                forward_matrix[j,i] = np.sum(vec) * emission_matrix[j, LETTER_TO_INDEX[seq[i]]]
+        result = np.sum(forward_matrix[:,-1])
+        print("### forward matrix ###\n",forward_matrix,"\n")
+        print("result: ",result)
 
     elif args.alg == 'backward':
         raise NotImplementedError

@@ -24,10 +24,18 @@ def calculate_forward(num_states, seq, transition_matrix, emission_matrix):
 def calculate_backward(num_states, seq, transition_matrix, emission_matrix):
     backward_matrix = np.zeros((num_states, len(seq)))
     backward_matrix[:,-1] = 1
+    print("init backward matrix:", backward_matrix, "\n")
     for j in reversed(range((len(seq))-1)):
+        print("j: ",j,"  seq[j]: ",seq[j])
         for i in range(num_states):
+            print("  i: ",i)
+            print("     ",backward_matrix[:,j+1])
+            print("     ",transition_matrix[:,i])
+            print("     ",emission_matrix[:,LETTER_TO_INDEX[seq[j]]])
             vec = backward_matrix[:,j+1] * transition_matrix[:,i] * emission_matrix[:,LETTER_TO_INDEX[seq[j]]]
             backward_matrix[i,j] = np.sum(vec)
+            print("  matrix[i,j]: ", np.sum(vec))
+        print("backward matrix:\n", backward_matrix, "\n")
     backward_matrix[0,0] = 1
     result = np.sum(backward_matrix[:,1])
     return backward_matrix, result
@@ -95,7 +103,7 @@ def main():
             index = int(trace[-1])
             trace += str(int(viterbi_matrix[index,-j-2,1]))
         trace = trace[::-1]
-        result = ''.join(['M' if int(trace[i])>1 and int(trace[i])<(num_states-2) else 'B' for j in range(1,len(trace))])
+        result = ''.join(['M' if int(trace[j])>1 and int(trace[j])<(num_states-2) else 'B' for j in range(1,len(trace))])
         print("trace: ", trace)
         print("result: ", result)
 

@@ -80,13 +80,13 @@ def main():
 
         # calculate viterbi matrix
         viterbi_matrix = np.zeros((num_states, seq_len, 2))
-        viterbi_matrix[0,0,0] = 1
+        viterbi_matrix[0, 0, 0] = 1
         for j in range(1, seq_len):
             for i in range(num_states):
                 vec = viterbi_matrix[:,j-1,0] * transition_matrix[:,i]
-                viterbi_matrix[i,j,0] = max(vec) * emission_matrix[i, LETTER_TO_INDEX[seq[j]]]
-                viterbi_matrix[i,j,1] = np.argmax(vec)
-        print("### viterbi matrix ###\n",viterbi_matrix[:,:,0],"\n")
+                viterbi_matrix[i, j, 0] = max(vec) * emission_matrix[i, LETTER_TO_INDEX[seq[j]]]
+                viterbi_matrix[i, j, 1] = np.argmax(vec)
+        print("### viterbi matrix ###\n", viterbi_matrix[:, :, 0], "\n")
 
         # traceback state sequence
         index = int(np.argmax(viterbi_matrix[:, -1, 0]))
@@ -116,7 +116,6 @@ def main():
         print(forward_matrix, "\n")
         print(backward_matrix, "\n")
         print(posterior_matrix, "\n")
-
 
 if __name__ == '__main__':
     main()

@@ -26,8 +26,8 @@ def calculate_backward(num_states, seq, transition_matrix, emission_matrix):
     backward_matrix[:,-1] = 1
     for j in reversed(range((len(seq))-1)):
         for i in range(num_states):
-            vec = backward_matrix[:,j+1] * transition_matrix[:,i]
-            backward_matrix[i,j] = np.sum(vec) * emission_matrix[i, LETTER_TO_INDEX[seq[j]]]
+            vec = backward_matrix[:,j+1] * transition_matrix[:,i] * emission_matrix[:,LETTER_TO_INDEX[seq[j]]]
+            backward_matrix[i,j] = np.sum(vec)
     backward_matrix[0,0] = 1
     result = np.sum(backward_matrix[:,1])
     return backward_matrix, result

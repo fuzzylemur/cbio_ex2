@@ -1,6 +1,7 @@
 import argparse
 import numpy as np
 
+LETTER_TO_INDEX = {'A':0, 'C':1, 'G':2, 'T':3, '^':4, '$':5}
 
 def print_50(str1, str2):
     i,j = 0,0
@@ -9,6 +10,27 @@ def print_50(str1, str2):
         print(str1[i:j])
         print(str2[i:j],'\n')
         i = j
+
+def calculate_forward(num_states, seq, transition_matrix, emission_matrix):
+    forward_matrix = np.zeros((num_states, len(seq)))
+    forward_matrix[0,0] = 1
+    for j in range(1, len(seq)):
+        for i in range(num_states):
+            vec = forward_matrix[:,j-1] * transition_matrix[:,i]
+            forward_matrix[i,j] = np.sum(vec) * emission_matrix[i, LETTER_TO_INDEX[seq[j]]]
+    result = np.sum(forward_matrix[:,-2])
+    return forward_matrix, result
+
+def calculate_backward(num_states, seq, transition_matrix, emission_matrix):
+    backward_matrix = np.zeros((num_states, len(seq)))
+    backward_matrix[:,-1] = 1
+    for j in reversed(range((len(seq))-1)):
+        for i in range(num_states):
+            vec = backward_matrix[:,j+1] * transition_matrix[:,i]
+            backward_matrix[i,j] = np.sum(vec) * emission_matrix[i, LETTER_TO_INDEX[seq[j]]]
+    backward_matrix[0,0] = 1
+    result = np.sum(backward_matrix[:,1])
+    return backward_matrix, result
 
 def main():
     np.set_printoptions(precision=2)
@@ -31,7 +53,6 @@ def main():
     num_states = len(states)
     p = args.p
     q = args.q
-    LETTER_TO_INDEX = {'A':0, 'C':1, 'G':2, 'T':3, '^':4, '$':5}
 
     # build transition matrix
     transition_matrix = np.zeros((num_states, num_states))
@@ -76,38 +97,25 @@ def main():
         trace = trace[::-1]
         result = ''.join(['M' if int(trace[i])>1 and int(trace[i])<(num_states-2) else 'B' for j in range(1,len(trace))])
         print("trace: ", trace)
-        print("result: ",result)
+        print("result: ", result)
 
     elif args.alg == 'forward':
-
-        # calculate forward matrix
-        forward_matrix = np.zeros((num_states, seq_len))
-        forward_matrix[0,0] = 1
-        for j in range(1, seq_len):
-            for i in range(num_states):
-                vec = forward_matrix[:,j-1] * transition_matrix[:,i]
-                forward_matrix[i,j] = np.sum(vec) * emission_matrix[i, LETTER_TO_INDEX[seq[j]]]
-        result = np.sum(forward_matrix[:,-2])
-        print("### forward matrix ###\n",forward_matrix,"\n")
-        print("result: ",result)
+        forward_matrix, result = calculate_forward(num_states, seq, transition_matrix, emission_matrix)
+        print("### forward matrix ###\n", forward_matrix, "\n")
+        print("result: ", result)
 
     elif args.alg == 'backward':
-        
-        # calculate backward matrix
-        backward_matrix = np.zeros((num_states, seq_len))
-        backward_matrix[:,-1] = 1.0
-        print(backward_matrix)
-        for j in reversed(range(seq_len-1)):
-            for i in range(num_states):
-                vec = backward_matrix[:,j+1] * transition_matrix[:,i]
-                backward_matrix[i,j] = np.sum(vec) * emission_matrix[i, LETTER_TO_INDEX[seq[j]]]
-                print(i, j)
-        result = np.sum(backward_matrix[:,1])
-        print("### backward matrix ###\n",backward_matrix,"\n")
-        print("result: ",result)
+        backward_matrix, result = calculate_backward(num_states, seq, transition_matrix, emission_matrix)
+        print("### backward matrix ###\n", backward_matrix, "\n")
+        print("result: ", result)
     
     elif args.alg == 'posterior':
-        raise NotImplementedError
+        forward_matrix, result1 = calculate_forward(num_states, seq, transition_matrix, emission_matrix)
+        backward_matrix, result2 = calculate_backward(num_states, seq, transition_matrix, emission_matrix)
+        posterior_matrix = forward_matrix * backward_matrix
+        print(forward_matrix, "\n")
+        print(backward_matrix, "\n")
+        print(posterior_matrix, "\n")
 
 
 if __name__ == '__main__':

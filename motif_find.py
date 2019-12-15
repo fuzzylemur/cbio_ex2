@@ -11,6 +11,7 @@ def print_50(str1, str2):
         i = j
 
 def main():
+    np.set_printoptions(precision=2)
     # parse arguments
     parser = argparse.ArgumentParser()
     parser.add_argument('--alg', help='Algorithm (e.g. viterbi)', required=True)
@@ -59,21 +60,21 @@ def main():
         # calculate viterbi matrix
         viterbi_matrix = np.zeros((num_states, seq_len, 2))
         viterbi_matrix[0,0,0] = 1
-        for i in range(1, seq_len):
-            for j in range(num_states):
-                vec = viterbi_matrix[:,i-1,0] * transition_matrix[:,j]
-                viterbi_matrix[j,i,0] = max(vec) * emission_matrix[j, LETTER_TO_INDEX[seq[i]]]
-                viterbi_matrix[j,i,1] = np.argmax(vec)
+        for j in range(1, seq_len):
+            for i in range(num_states):
+                vec = viterbi_matrix[:,j-1,0] * transition_matrix[:,i]
+                viterbi_matrix[i,j,0] = max(vec) * emission_matrix[i, LETTER_TO_INDEX[seq[j]]]
+                viterbi_matrix[i,j,1] = np.argmax(vec)
         print("### viterbi matrix ###\n",viterbi_matrix[:,:,0],"\n")
 
         # traceback state sequence
         index = int(np.argmax(viterbi_matrix[:,-1,0]))
         trace = str(int(viterbi_matrix[index,-1,1]))
-        for i in range(seq_len-2):
+        for j in range(seq_len-2):
             index = int(trace[-1])
-            trace += str(int(viterbi_matrix[index,-i-2,1]))
+            trace += str(int(viterbi_matrix[index,-j-2,1]))
         trace = trace[::-1]
-        result = ''.join(['M' if int(trace[i])>1 and int(trace[i])<(num_states-2) else 'B' for i in range(1,len(trace))])
+        result = ''.join(['M' if int(trace[i])>1 and int(trace[i])<(num_states-2) else 'B' for j in range(1,len(trace))])
         print("trace: ", trace)
         print("result: ",result)
 
@@ -82,16 +83,28 @@ def main():
         # calculate forward matrix
         forward_matrix = np.zeros((num_states, seq_len))
         forward_matrix[0,0] = 1
-        for i in range(1, seq_len):
-            for j in range(num_states):
-                vec = forward_matrix[:,i-1] * transition_matrix[:,j]
-                forward_matrix[j,i] = np.sum(vec) * emission_matrix[j, LETTER_TO_INDEX[seq[i]]]
-        result = np.sum(forward_matrix[:,-1])
+        for j in range(1, seq_len):
+            for i in range(num_states):
+                vec = forward_matrix[:,j-1] * transition_matrix[:,i]
+                forward_matrix[i,j] = np.sum(vec) * emission_matrix[i, LETTER_TO_INDEX[seq[j]]]
+        result = np.sum(forward_matrix[:,-2])
         print("### forward matrix ###\n",forward_matrix,"\n")
         print("result: ",result)
 
     elif args.alg == 'backward':
-        raise NotImplementedError
+        
+        # calculate backward matrix
+        backward_matrix = np.zeros((num_states, seq_len))
+        backward_matrix[:,-1] = 1.0
+        print(backward_matrix)
+        for j in reversed(range(seq_len-1)):
+            for i in range(num_states):
+                vec = backward_matrix[:,j+1] * transition_matrix[:,i]
+                backward_matrix[i,j] = np.sum(vec) * emission_matrix[i, LETTER_TO_INDEX[seq[j]]]
+                print(i, j)
+        result = np.sum(backward_matrix[:,1])
+        print("### backward matrix ###\n",backward_matrix,"\n")
+        print("result: ",result)
     
     elif args.alg == 'posterior':
         raise NotImplementedError

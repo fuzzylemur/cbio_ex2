@@ -48,20 +48,18 @@ def calculate_forward(num_states, seq, transition_matrix, emission_matrix):
         for i in range(num_states):
             vec = forward_matrix[:, j-1] + transition_matrix[: ,i]
             forward_matrix[i, j] = logsumexp(vec) + emission_matrix[i, LETTER_TO_INDEX[seq[j]]]
-            #vec = forward_matrix[:, j-1] + transition_matrix[: ,i]
-            #forward_matrix[i, j] = np.sum(vec) + emission_matrix[i, LETTER_TO_INDEX[seq[j]]]
-    result = logsumexp(forward_matrix[:, -2])
+    result = logsumexp(forward_matrix[:, -1])
     return forward_matrix, result
 
 def calculate_backward(num_states, seq, transition_matrix, emission_matrix):
     backward_matrix = np.full((num_states, len(seq)), fill_value=np.NINF, dtype=float)
     backward_matrix[:, -1] = 0
-    for j in reversed(range(1, len(seq))):
+    for j in range(len(seq)-1, 0, -1):
         for i in range(num_states):
-            vec = backward_matrix[:, j] + transition_matrix[i,:] + emission_matrix[:, LETTER_TO_INDEX[seq[j]]]
+            vec = backward_matrix[:, j] + transition_matrix[i, :] + emission_matrix[:, LETTER_TO_INDEX[seq[j]]]
             backward_matrix[i, j-1] = logsumexp(vec)
-    backward_matrix[0, 0] = 0
-    result = logsumexp(backward_matrix[:, 1])
+    # backward_matrix[0, 0] = 0
+    result = logsumexp(backward_matrix[:, 0])
     return backward_matrix, result
 
 def print_50(str1, str2):

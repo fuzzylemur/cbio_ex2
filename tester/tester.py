@@ -176,7 +176,7 @@ def test_backward_forward():
                              PASSED if math.isclose(output_backward, output_forward, rel_tol=1e-5)
                              else FAILED)
 
-                results.append(output_backward)
+                results.append(output_forward)
                 headers.append(format_things(seq, tsv, prob))
 
     # Testing very long seq
@@ -262,9 +262,9 @@ def main():
     global arg
     arg = sys.argv
     tester_index = 0
-    test_viterbi()
+    #test_viterbi()
     test_backward_forward()
-    test_posterior()
+    #test_posterior()
 
 
 if __name__ == '__main__':

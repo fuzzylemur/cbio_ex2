@@ -263,8 +263,8 @@ def main():
     arg = sys.argv
     tester_index = 0
     #test_viterbi()
-    test_backward_forward()
-    #test_posterior()
+    #test_backward_forward()
+    test_posterior()
 
 
 if __name__ == '__main__':

@@ -29,8 +29,8 @@ PROB_DICT = {
 
 }
 
-TSV_LIST = [r"tester\tata.tsv", r"tester\initial_emision.tsv", "tester\cpg.tsv"]
-LONG_MOTIF_TSV = "tester\long_motif.tsv"
+TSV_LIST = [r"tester/tata.tsv", r"tester/initial_emision.tsv", "tester/cpg.tsv"]
+LONG_MOTIF_TSV = "tester/long_motif.tsv"
 
 global tester_index
 global arg

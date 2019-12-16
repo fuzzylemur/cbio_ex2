@@ -13,7 +13,7 @@ def build_transition_matrix(num_states, motif_len, p, q):
     transition_matrix[-2, -1] = p
     for i in range(motif_len):
         transition_matrix[2+i, 3+i] = 1
-    print("### transition matrix ###\n", transition_matrix, "\n")
+    #print("### transition matrix ###\n", transition_matrix, "\n")
     return transition_matrix
 
 def build_emission_matrix(initial_emissions, motif_len):
@@ -24,7 +24,7 @@ def build_emission_matrix(initial_emissions, motif_len):
     emission_matrix = np.hstack((emission_matrix, zero_col, zero_col))
     emission_matrix[0, -2] = 1
     emission_matrix[-1, -1] = 1
-    print("### emission matrix ###\n", emission_matrix, "\n")
+    #print("### emission matrix ###\n", emission_matrix, "\n")
     return emission_matrix
 
 def calculate_viterbi(num_states, seq, transition_matrix, emission_matrix):
@@ -35,7 +35,7 @@ def calculate_viterbi(num_states, seq, transition_matrix, emission_matrix):
             vec = viterbi_matrix[:,j-1,0] * transition_matrix[:,i]
             viterbi_matrix[i, j, 0] = max(vec) * emission_matrix[i, LETTER_TO_INDEX[seq[j]]]
             viterbi_matrix[i, j, 1] = np.argmax(vec)
-    print("### viterbi matrix ###\n", viterbi_matrix[:, :, 0], "\n")
+    #print("### viterbi matrix ###\n", viterbi_matrix[:, :, 0], "\n")
     return viterbi_matrix
 
 def calculate_forward(num_states, seq, transition_matrix, emission_matrix):
@@ -103,27 +103,27 @@ def main():
             trace += str(int(viterbi_matrix[index, -j-2, 1]))
         trace = trace[::-1]
         result = ''.join(['M' if int(trace[j]) > 1 and int(trace[j]) < (num_states-2) else 'B' for j in range(1, len(trace))])
-        print("trace: ", trace)
-        print("result: ", result)
+        #print("trace: ", trace)
+        #print("result: ", result)
         print_50(seq[1:-1], result)
 
     elif args.alg == 'forward':
         forward_matrix, result = calculate_forward(num_states, seq, transition_matrix, emission_matrix)
-        print("### forward matrix ###\n", forward_matrix, "\n")
-        print("result: ", result)
+        #print("### forward matrix ###\n", forward_matrix, "\n")
+        print(result)
 
     elif args.alg == 'backward':
         backward_matrix, result = calculate_backward(num_states, seq, transition_matrix, emission_matrix)
-        print("### backward matrix ###\n", backward_matrix, "\n")
-        print("result: ", result)
+        #print("### backward matrix ###\n", backward_matrix, "\n")
+        print(result)
     
     elif args.alg == 'posterior':
         forward_matrix, result1 = calculate_forward(num_states, seq, transition_matrix, emission_matrix)
         backward_matrix, result2 = calculate_backward(num_states, seq, transition_matrix, emission_matrix)
         posterior_matrix = forward_matrix * backward_matrix
-        print("### forward matrix ###\n", forward_matrix, "\n")
-        print("### backward matrix ###\n", backward_matrix, "\n")
-        print("### posterior matrix ###\n", posterior_matrix, "\n")
+        #print("### forward matrix ###\n", forward_matrix, "\n")
+        #print("### backward matrix ###\n", backward_matrix, "\n")
+        #print("### posterior matrix ###\n", posterior_matrix, "\n")
 
         # traceback state sequence
         trace = str(int(np.argmax(posterior_matrix[:, -2])))
@@ -131,8 +131,8 @@ def main():
             trace += str(int(np.argmax(posterior_matrix[:, -j-2])))
         trace = trace[::-1]
         result = ''.join(['M' if int(trace[j]) > 1 and int(trace[j]) < (num_states-2) else 'B' for j in range(1, len(trace))])
-        print("trace: ", trace)
-        print("result: ", result)
+        #print("trace: ", trace)
+        #print("result: ", result)
         print_50(seq[1:-1], result)
 
 if __name__ == '__main__':

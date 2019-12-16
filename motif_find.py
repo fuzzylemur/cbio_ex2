@@ -33,8 +33,10 @@ def calculate_viterbi(num_states, seq, transition_matrix, emission_matrix):
     for j in range(1, len(seq)):
         for i in range(num_states):
             vec = viterbi_matrix[:,j-1,0] * transition_matrix[:,i]
-            viterbi_matrix[i, j, 0] = max(vec) * emission_matrix[i, LETTER_TO_INDEX[seq[j]]]
-            viterbi_matrix[i, j, 1] = np.argmax(vec)
+            viterbi_matrix[i, j, 0] = np.max(vec) * emission_matrix[i, LETTER_TO_INDEX[seq[j]]]
+            viterbi_matrix[i, j, 1] = np.argmax(vec) 
+            # TODO - if there is more then one with the max value it will take the first occurence, 
+            # if the emission is 0 there are no probabilty for one more then other - check it too
     #print("### viterbi matrix ###\n", viterbi_matrix[:, :, 0], "\n")
     return viterbi_matrix
 
@@ -63,8 +65,8 @@ def print_50(str1, str2):
     i,j = 0,0
     while i < len(str1)-1:
         j = min(i+50, len(str1))
-        print(str1[i:j])
-        print(str2[i:j], '\n')
+        print(str2[i:j])
+        print(str1[i:j], '\n')
         i = j
 
 def main():
@@ -96,7 +98,7 @@ def main():
         viterbi_matrix = calculate_viterbi(num_states, seq, transition_matrix, emission_matrix)
 
         # traceback state sequence
-        index = int(np.argmax(viterbi_matrix[:, -1, 0]))
+        index = int(np.argmax(viterbi_matrix[:, -1, 0])) # TODO - why int it?
         trace = str(int(viterbi_matrix[index, -1, 1]))
         for j in range(seq_len-2):
             index = int(trace[-1])
